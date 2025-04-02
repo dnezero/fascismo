@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linea del Tempo del Fascismo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            cursor: default;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 20px;
+        }
+
+        .container {
+            padding: 15px 30px;
+            position: relative;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .container:nth-child(odd) {
+            text-align: left;
+        }
+
+        .container:nth-child(even) {
+            text-align: right;
+        }
+
+        .text-box {
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: inline-block;
+            max-width: 70%;
+            border: 1px solid #333;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .container:nth-child(odd) .text-box::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 100%;
+            border: 10px solid transparent;
+            border-left-color: #1a1a1a;
+            margin-left: -10px;
+        }
+
+        .container:nth-child(even) .text-box::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: 100%;
+            border: 10px solid transparent;
+            border-right-color: #1a1a1a;
+            margin-right: -10px;
+        }
+
+        .container h2 {
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-size: 1.5rem;
+        }
+
+        .container p {
+            line-height: 1.7;
+            color: #cccccc;
+        }
+
+        .container img {
+            position: absolute;
+            width: 100px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            cursor: pointer; /* Aggiungi un cursore pointer per indicare che l'immagine è cliccabile */
+            transition: transform 0.3s ease; /* Aggiungi la transizione per l'effetto di ingrandimento */
+        }
+
+        .container:nth-child(odd) img {
+            left: 110%;
+            top: 20px;
+        }
+
+        .container:nth-child(even) img {
+            right: 110%;
+            top: 20px;
+            width: 200px;
+            height: auto;
+        }
+
+        @keyframes movedown {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #c82333;
+        }
+
+        .button-icon {
+            margin-right: 5px;
+            height: 1em;
+            width: 1em;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 0, 0, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+            z-index: 10000;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+            display: none;
+            transform-origin: center;
+        }
+
+        .text-box:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 12px rgba(255, 0, 0, 0.3);
+        }
+
+        #autore {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stile per l'immagine a schermo intero */
+        .fullscreen-image-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Sfondo nero semi-trasparente */
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* Inizia con opacità 0 per l'animazione */
+            transition: opacity 0.3s ease; /* Transizione per l'opacità */
+        }
+
+        .fullscreen-image-container img {
+            max-width: 90%; /* Limita la larghezza dell'immagine */
+            max-height: 90%; /* Limita l'altezza dell'immagine */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); /* Ombra per l'immagine ingrandita */
+            transform: scale(0.8); /* Inizia con una scala ridotta per l'animazione */
+            transition: transform 0.3s ease; /* Transizione per la scala */
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.7); /* Sfondo nero semi-trasparente per il pulsante */
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 24px;
+            text-align: center;
+            line-height: 40px; /* Centra verticalmente la 'X' */
+            cursor: pointer;
+            z-index: 10001; /* Assicurati che sia sopra l'immagine a schermo intero */
+            opacity: 0.8; /* Leggera trasparenza */
+            transition: opacity 0.2s ease; /* Transizione per l'effetto hover */
+        }
+
+        .close-button:hover {
+            opacity: 1; /* Rendi il pulsante completamente opaco al passaggio del mouse */
+        }
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const containers = document.querySelectorAll('.container');
+            const customCursor = document.querySelector('.custom-cursor');
+            const fullscreenContainer = document.querySelector('.fullscreen-image-container');
+            const fullscreenImage = fullscreenContainer.querySelector('img');
+            const closeButton = fullscreenContainer.querySelector('.close-button');
+
+            function revealOnScroll() {
+                containers.forEach(container => {
+                    const containerTop = container.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+
+                    if (containerTop < windowHeight - 100) {
+                        container.style.opacity = '1';
+                        container.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', revealOnScroll);
+
+            document.addEventListener('mousemove', (e) => {
+                customCursor.style.left = `${e.clientX}px`;
+                customCursor.style.top = `${e.clientY}px`;
+                customCursor.style.display = 'block';
+            });
+
+            document.addEventListener('mouseleave', () => {
+                customCursor.style.display = 'none';
+            });
+
+            document.addEventListener('mouseenter', () => {
+                customCursor.style.display = 'block';
+            });
+
+            const textBoxes = document.querySelectorAll('.text-box');
+            textBoxes.forEach(box => {
+                box.addEventListener('mouseenter', () => {
+                    customCursor.style.transform = 'scale(1.2) translate(-50%, -50%)';
+                    customCursor.style.backgroundColor = 'rgba(255, 100, 100, 0.5)';
+                    customCursor.style.boxShadow = '0 0 20px rgba(255, 100, 100, 0.8)';
+                });
+
+                box.addEventListener('mouseleave', () => {
+                    customCursor.style.transform = 'scale(1) translate(-50%, -50%)';
+                    customCursor.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
+                    customCursor.style.boxShadow = '0 0 30px rgba(255, 0, 0, 0.7)';
+                });
+            });
+
+            // Gestione del clic sull'immagine per ingrandirla
+            document.querySelectorAll('.container img').forEach(img => {
+                img.addEventListener('click', () => {
+                    const src = img.getAttribute('src');
+                    fullscreenImage.setAttribute('src', src);
+                    fullscreenContainer.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Impedisce lo scorrimento della pagina principale
+                    // Animazione di apertura
+                    setTimeout(() => {
+                        fullscreenContainer.style.opacity = '1';
+                        fullscreenImage.style.transform = 'scale(1)';
+                    }, 10); // Piccolo ritardo per innescare la transizione
+                });
+            });
+
+            // Gestione del clic sul pulsante di chiusura
+            closeButton.addEventListener('click', () => {
+                // Animazione di chiusura
+                fullscreenContainer.style.opacity = '0';
+                fullscreenImage.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    fullscreenContainer.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Ripristina lo scorrimento della pagina principale
+                }, 300); // La durata deve corrispondere alla transizione CSS
+            });
+
+            // Animazione al passaggio del mouse sull'immagine
+            document.querySelectorAll('.container img').forEach(img => {
+                img.addEventListener('mouseenter', () => {
+                    img.style.transform = 'scale(1.1)'; // Ingrossa l'immagine al passaggio del mouse
+                });
+                img.addEventListener('mouseleave', () => {
+                    img.style.transform = 'scale(1)'; // Ripristina la scala originale
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="autore">Creato da Michele Martino della 3^B</div>
+    <div class="timeline">
+        <div class="container odd">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Mussolini_mezzobusto.jpg/250px-Mussolini_mezzobusto.jpg" alt="Benito Mussolini">
+            <div class="text-box">
+                <h2>1919: Nascita del Fascismo</h2>
+                <p>Benito Mussolini fonda il movimento fascista a Milano il 23 marzo 1919. Il fascismo si presenta come un movimento nazionalista, autoritario e reazionario, che promette di riportare l'Italia alla grandezza dell'Impero Romano. Le squadre d'azione fasciste, le camicie nere, si distinguono per l'uso della violenza contro gli oppositori politici, principalmente socialisti e comunisti.</p>
+                <a href="https://it.wikipedia.org/wiki/Benito_Mussolini" target="_blank" class="button">
+                    Leggi di più su Mussolini
+                </a>
+            </div>
+        </div>
+        <div class="container even">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/March_on_Rome_1922_-_Alle_porte_di_Roma.png" alt="Marcia su Roma">
+            <div class="text-box">
+                <h2>1922: La Marcia su Roma</h2>
+                <p>La Marcia su Roma, il 28 ottobre 1922, è una manifestazione organizzata dal Partito Nazionale Fascista (PNF). Migliaia di camicie nere convergono sulla capitale, esercitando pressioni sul governo. Il re Vittorio Emanuele III, anziché firmare lo stato d'assedio, nomina Mussolini Presidente del Consiglio. Questo evento segna l'inizio del regime fascista in Italia.</p>
+                 <a href="https://it.wikipedia.org/wiki/Marcia_su_Roma" target="_blank" class="button">
+                    Leggi di più sulla Marcia su Roma
+                </a>
+            </div>
+        </div>
+        <div class="container odd">
+            <img src="https://s.hdnux.com/photos/22/44/06/4866450/6/1200x0.jpg" alt="Adolf Hitler">
+            <div class="text-box">
+                <h2>1936: L'Asse Roma-Berlino</h2>
+                <p>Nel 1936, Mussolini e Hitler firmano un patto di amicizia, l'Asse Roma-Berlino. Questo segna un avvicinamento ideologico e politico tra il fascismo italiano e il nazismo tedesco. L'alleanza si rafforza negli anni successivi, portando all'ingresso dell'Italia nella Seconda Guerra Mondiale a fianco della Germania.</p>
+                <a href="https://it.wikipedia.org/wiki/Asse_Roma-Berlino" target="_blank" class="button">
+                    Leggi di più sull'alleanza
+                </a>
+            </div>
+        </div>
+        <div class="container even">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Corriere_testata_1938.jpg/1920px-Corriere_testata_1938.jpg" alt="Leggi razziali">
+            <div class="text-box">
+                <h2>1938: Le Leggi Razziali</h2>
+                <p>Nel 1938 vengono promulgate le leggi razziali, che discriminano e perseguitano gli ebrei italiani. Le leggi escludono gli ebrei dalla vita pubblica, limitano i loro diritti e preparano il terreno per la loro deportazione e sterminio durante la Seconda Guerra Mondiale. Questo rappresenta una delle pagine più buie del regime fascista.</p>
+                <a href="https://it.wikipedia.org/wiki/Leggi_razziali_fasciste" target="_blank" class="button">
+                    Leggi di più sulle leggi razziali
+                </a>
+            </div>
+        </div>
+         <div class="container odd">
+            <img src="https://www.itacascuola.it/wp-content/uploads/2018/07/287.png" alt="Mappa dell'Italia nella Seconda Guerra Mondiale">
+            <div class="text-box">
+                <h2>1940-1943: L'Italia in Guerra</h2>
+                <p>L'Italia entra nella Seconda Guerra Mondiale nel 1940, a fianco della Germania. Le campagne militari italiane si rivelano fallimentari su più fronti (Grecia, Nord Africa, Russia). Nel 1943, in seguito allo sbarco alleato in Sicilia e alla crisi del regime, Mussolini viene arrestato il 25 luglio.</p>
+                <a href="https://it.wikipedia.org/wiki/Italia_nella_seconda_guerra_mondiale" target="_blank" class="button">
+                    Leggi di più sulla Seconda Guerra Mondiale
+                </a>
+            </div>
+        </div>
+        <div class="container even">
+            <img src="https://www.fattiperlastoria.it/wp-content/uploads/2019/11/Mussolini-arresto-comizio-1915.jpg" alt="Arresto di Mussolini">
+            <div class="text-box">
+                <h2>1943: La Caduta di Mussolini</h2>
+                <p>Il 25 luglio 1943, Mussolini viene arrestato su ordine del Gran Consiglio del Fascismo e del re Vittorio Emanuele III. Il governo Badoglio firma l'armistizio con gli Alleati l'8 settembre 1943, segnando la fine della partecipazione italiana alla guerra e la dissoluzione del regime fascista. L'Italia si divide tra il Regno del Sud, controllato dagli Alleati, e la Repubblica Sociale Italiana (RSI), uno stato fantoccio nazista guidato da Mussolini.</p>
+                 <a href="https://it.wikipedia.org/wiki/Arresto_di_Benito_Mussolini" target="_blank" class="button">
+                    Leggi di più sull'arresto di Mussolini
+                </a>
+            </div>
+        </div>
+        <div class="container odd">
+            <img src="https://cdn.studenti.stbm.it/images/2021/11/10/fine-della-seconda-guerra-mondiale-orig.jpeg" alt="Fine della Seconda Guerra Mondiale in Europa">
+            <div class="text-box">
+                <h2>1945: La Fine del Fascismo</h2>
+                <p>La Seconda Guerra Mondiale termina in Europa l'8 maggio 1945 con la resa della Germania. Il 25 aprile 1945, l'Italia viene liberata dalle forze alleate e dai partigiani. Mussolini viene catturato e fucilato il 28 aprile 1945. La fine della guerra segna la fine definitiva del regime fascista in Italia e l'inizio di una nuova era democratica.</p>
+                <a href="https://it.wikipedia.org/wiki/Fine_della_seconda_guerra_mondiale_in_Europa" target="_blank" class="button">
+                    Leggi di più sulla fine della guerra
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="custom-cursor"></div>
+    <div class="fullscreen-image-container">
+        <img src="">
+        <div class="close-button">X</div>
+    </div>
+</body>
+</html>
